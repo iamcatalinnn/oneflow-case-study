@@ -1,0 +1,66 @@
+version: 2
+
+models:
+  - name: int_events_valid
+    description: "{{ doc('int_events_valid_model') }}"
+    columns:
+      - name: event_id
+        description: Deduplicated event identifier from the trusted analytics event set.
+        tests:
+          - not_null
+          - unique
+      - name: user_id
+        description: User identifier associated with the valid event.
+      - name: account_id
+        description: Account identifier associated with the valid event.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_accounts')
+              field: account_id
+      - name: event_type
+        description: Event type from the trusted analytics event set.
+        tests:
+          - not_null
+      - name: event_ts
+        description: Valid event timestamp used for downstream analytics.
+        tests:
+          - not_null
+      - name: user_country
+        description: User country code from the event, when available.
+      - name: user_agent
+        description: Browser or client information associated with the event.
+      - name: ingested_at
+        description: UTC ingestion timestamp inherited from the raw layer.
+        tests:
+          - not_null
+
+  - name: int_document_signed_events
+    description: "{{ doc('int_document_signed_events_model') }}"
+    columns:
+      - name: event_id
+        description: Event identifier for a valid document_signed event.
+        tests:
+          - not_null
+          - unique
+      - name: user_id
+        description: User identifier associated with the signing event.
+      - name: account_id
+        description: Account identifier associated with the signing event.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_accounts')
+              field: account_id
+      - name: event_ts
+        description: Timestamp when the document was signed.
+        tests:
+          - not_null
+      - name: activity_date
+        description: Calendar date derived from the signing timestamp for trend analysis.
+        tests:
+          - not_null
+      - name: ingested_at
+        description: UTC ingestion timestamp inherited from the raw layer.
+        tests:
+          - not_null
