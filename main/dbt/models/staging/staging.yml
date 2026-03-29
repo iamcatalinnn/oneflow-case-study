@@ -1,0 +1,94 @@
+version: 2
+
+models:
+  - name: stg_accounts
+    description: "{{ doc('stg_accounts_model') }}"
+    columns:
+      - name: account_id
+        description: Unique account identifier.
+        tests:
+          - not_null
+          - unique
+      - name: company_name
+        description: Trimmed company name.
+      - name: plan
+        description: Normalized subscription plan.
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['free', 'starter', 'business']
+      - name: country
+        description: Uppercased account country code.
+        tests:
+          - not_null
+      - name: created_date
+        description: Account creation date.
+      - name: is_paying
+        description: Boolean flag indicating whether the account is paying.
+      - name: ingested_at
+        description: UTC ingestion timestamp from the raw layer.
+        tests:
+          - not_null
+
+  - name: stg_events
+    description: "{{ doc('stg_events_model') }}"
+    columns:
+      - name: event_id
+        description: Event identifier from the raw source.
+        tests:
+          - not_null
+      - name: user_id
+        description: User identifier associated with the event.
+      - name: account_id
+        description: Account identifier associated with the event.
+      - name: event_type
+        description: Normalized event type.
+      - name: event_ts
+        description: Parsed event timestamp after staging normalization.
+      - name: user_country
+        description: Normalized two-letter user country code from the event.
+      - name: user_agent
+        description: Browser or client information.
+      - name: ingested_at
+        description: UTC ingestion timestamp from the raw layer.
+        tests:
+          - not_null
+      - name: is_missing_event_type
+        description: True when the event type is missing.
+      - name: is_missing_account_id
+        description: True when the account identifier is missing.
+      - name: is_missing_user_country
+        description: True when the user country is missing.
+      - name: is_invalid_event_ts
+        description: True when the event timestamp is null or outside the plausible time window.
+      - name: is_duplicate_event_id
+        description: True when the same event_id appears more than once in the raw source.
+      - name: event_id_rank
+        description: Duplicate resolution rank within each event_id group.
+        tests:
+          - not_null
+      - name: is_valid_for_analytics
+        description: True when the row is the preferred duplicate and passes minimum quality rules required for analytics.
+        tests:
+          - not_null
+
+  - name: stg_user_identity
+    description: "{{ doc('stg_user_identity_model') }}"
+    columns:
+      - name: user_id
+        description: User identifier isolated from the analytics event path.
+        tests:
+          - not_null
+          - unique
+      - name: user_name
+        description: User name isolated from the analytics event path.
+      - name: user_email
+        description: User email isolated from the analytics event path.
+      - name: user_phone
+        description: User phone isolated from the analytics event path.
+      - name: ip_address
+        description: IP address isolated from the analytics event path.
+      - name: ingested_at
+        description: UTC ingestion timestamp of the selected identity record.
+        tests:
+          - not_null

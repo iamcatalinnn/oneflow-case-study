@@ -2,18 +2,54 @@ version: 2
 
 sources:
   - name: raw
+    description: "{{ doc('raw_source_overview') }}"
     database: oneflow
     schema: raw
     tables:
-      - name: accounts
-        description: Raw accounts data ingested from accounts.csv
-        columns:
-          - name: account_id
-            tests:
-              - not_null
-
       - name: events
-        description: Raw events data ingested from events.csv
+        description: "{{ doc('raw_events_source') }}"
         columns:
           - name: event_id
+            description: Unique event identifier.
+          - name: user_id
+            description: The user who triggered the event.
+          - name: user_name
+            description: Full name of the user.
+          - name: user_email
+            description: Email of the user.
+          - name: user_phone
+            description: Phone number of the user. May be empty.
+          - name: user_country
+            description: Two-letter country code of the user.
           - name: account_id
+            description: The account the user belongs to.
+          - name: ip_address
+            description: IP address of the request.
+          - name: event_type
+            description: Type of event, such as login, document_created, or document_signed.
+          - name: event_ts
+            description: Timestamp when the event occurred, parsed during ingestion from the source timestamp column.
+          - name: user_agent
+            description: Browser or client information.
+          - name: ingested_at
+            description: UTC timestamp when the raw record was loaded into Postgres.
+
+      - name: accounts
+        description: "{{ doc('raw_accounts_source') }}"
+        columns:
+          - name: account_id
+            description: Unique account identifier.
+            tests:
+              - not_null
+          - name: company_name
+            description: Company name.
+          - name: plan
+            description: Subscription plan, such as free, starter, business, or enterprise.
+          - name: country
+            description: Two-letter country code.
+          - name: created_date
+            description: Date when the account was created.
+          - name: is_paying
+            description: Whether the account is on a paid plan.
+          - name: ingested_at
+            description: UTC timestamp when the raw record was loaded into Postgres.
