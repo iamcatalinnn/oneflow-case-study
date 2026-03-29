@@ -1,0 +1,41 @@
+account_id,company_name,plan,country,created_date,is_paying
+1,Acme Corp,starter,FR,2022-06-11,true
+2,Globex Industries,free,FI,2023-07-03,false
+3,Initech Solutions,starter,US,2023-10-03,true
+4,Umbrella Corp,business,US,2023-07-25,true
+5,Wayne Enterprises,enterprise,NL,2022-07-30,true
+6,Stark Industries,starter,FR,2022-01-18,true
+7,Oscorp,business,US,2023-06-16,true
+8,LexCorp,starter,FI,2022-11-01,true
+9,Cyberdyne Systems,starter,US,2023-06-17,true
+10,Aperture Science,free,NL,2023-07-23,false
+11,Weyland-Yutani,business,SE,2022-12-03,true
+12,Soylent Corp,free,CA,2022-08-16,false
+13,Tyrell Corporation,enterprise,NO,2023-02-20,true
+14,Massive Dynamic,free,FR,2023-06-08,false
+15,Hooli,business,NO,2023-10-20,true
+16,Pied Piper,starter,NO,2023-03-31,true
+17,Dunder Mifflin,free,DE,2022-05-07,false
+18,Sterling Cooper,enterprise,NL,2022-06-05,true
+19,Wonka Industries,free,NL,2022-07-16,false
+20,Nakatomi Trading,enterprise,US,2023-07-20,true
+21,Prestige Worldwide,enterprise,FI,2023-02-23,true
+22,Vandelay Industries,enterprise,DE,2022-10-30,true
+23,Bluth Company,free,SE,2023-11-29,false
+24,InGen,enterprise,US,2023-06-20,true
+25,Dharma Initiative,free,DK,2022-12-17,false
+26,Oceanic Airlines,enterprise,CA,2022-07-19,true
+27,Rekall Inc,free,NL,2022-11-26,false
+28,Omni Consumer Products,business,GB,2023-02-02,true
+29,Buy n Large,starter,FI,2023-11-24,true
+30,Monsters Inc,free,FR,2023-07-12,false
+31,Spacely Sprockets,starter,NL,2022-01-27,true
+32,Cogswell Cogs,business,CA,2022-03-20,true
+33,Gekko & Co,business,NO,2023-02-10,true
+34,Paper Street Soap,business,FR,2023-10-20,true
+35,GeneriCo,starter,FI,2022-07-03,true
+36,TechFlow AB,starter,US,2023-10-16,true
+37,Nordic Solutions,starter,NO,2022-11-08,true
+38,DataStream GmbH,enterprise,DK,2023-03-28,true
+39,CloudNine Ltd,free,SE,2022-07-02,false
+40,SignalPath Inc,enterprise,DK,2023-12-17,true
