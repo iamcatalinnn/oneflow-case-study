@@ -1,0 +1,19 @@
+version: 2
+
+sources:
+  - name: raw
+    database: oneflow
+    schema: raw
+    tables:
+      - name: accounts
+        description: Raw accounts data ingested from accounts.csv
+        columns:
+          - name: account_id
+            tests:
+              - not_null
+
+      - name: events
+        description: Raw events data ingested from events.csv
+        columns:
+          - name: event_id
+          - name: account_id
