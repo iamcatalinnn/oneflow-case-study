@@ -29,8 +29,12 @@ EXPECTED_EVENTS_COLS = {
 
 
 def na_to_none(value):
-    """Convert pandas NA/NaT to None for SQL NULL."""
-    return None if pd.isna(value) else value
+    """Convert pandas NA/NaT/nan strings to None for SQL NULL."""
+    if pd.isna(value):
+        return None
+    if isinstance(value, str) and value.lower() == "nan":
+        return None
+    return value
 
 
 def validate_columns(df, expected, name):
@@ -90,7 +94,7 @@ def load_accounts(cursor, ingested_at):
 
 
 def load_events(cursor, ingested_at):
-    df = pd.read_csv(DATA_DIR / "events.csv")
+    df = pd.read_csv(DATA_DIR / "events.csv", dtype={"user_phone": str})
 
     validate_columns(df, EXPECTED_EVENTS_COLS, "events")
 
