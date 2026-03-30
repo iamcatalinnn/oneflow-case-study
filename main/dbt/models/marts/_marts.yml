@@ -1,0 +1,79 @@
+version: 2
+
+models:
+  - name: dim_accounts
+    description: "{{ doc('dim_accounts_model') }}"
+    columns:
+      - name: account_id
+        description: Unique account identifier.
+        tests:
+          - not_null
+          - unique
+      - name: company_name
+        description: Company name associated with the account.
+      - name: plan
+        description: Subscription plan used for business segmentation.
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['free', 'starter', 'business']
+      - name: country
+        description: Account country used for business segmentation.
+        tests:
+          - not_null
+      - name: created_date
+        description: Date when the account was created.
+      - name: is_paying
+        description: Whether the account is on a paid plan.
+
+  - name: fct_document_signing_daily
+    description: "{{ doc('fct_document_signing_daily_model') }}"
+    columns:
+      - name: account_id
+        description: Account identifier associated with the signing activity.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_accounts')
+              field: account_id
+      - name: activity_date
+        description: Calendar date of the signing activity.
+        tests:
+          - not_null
+      - name: document_signed_count
+        description: Number of valid document_signed events for the account on the given date.
+        tests:
+          - not_null
+
+  - name: mart_document_signing_activity
+    description: "{{ doc('mart_document_signing_activity_model') }}"
+    columns:
+      - name: activity_date
+        description: Calendar date of the signing activity.
+        tests:
+          - not_null
+      - name: account_id
+        description: Account identifier.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_accounts')
+              field: account_id
+      - name: company_name
+        description: Company name associated with the account.
+      - name: plan
+        description: Subscription plan used for segmentation.
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['free', 'starter', 'business']
+      - name: country
+        description: Account country used for segmentation.
+        tests:
+          - not_null
+      - name: is_paying
+        description: Whether the account is on a paid plan.
+      - name: document_signed_count
+        description: Number of valid document_signed events for the account on the given date.
+        tests:
+          - not_null
