@@ -106,5 +106,3 @@ models:
         description: Timestamp of the first event associated with this user_id and ip_address combination.
       - name: last_seen_at
         description: Timestamp of the last event associated with this user_id and ip_address combination.
-      - name: ip_address_event_count
-        description: Total number of events associated with this user_id and ip_address combination.

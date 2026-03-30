@@ -15,8 +15,7 @@ SELECT
     user_id,
     ip_address,
     MIN(event_ts) as first_seen_at,
-    MAX(event_ts) as last_seen_at,
-    COUNT(*) as ip_address_event_count
+    MAX(event_ts) as last_seen_at
 FROM 
     base
 GROUP BY 
