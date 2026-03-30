@@ -86,9 +86,25 @@ models:
         description: User email isolated from the analytics event path.
       - name: user_phone
         description: User phone isolated from the analytics event path.
-      - name: ip_address
-        description: IP address isolated from the analytics event path.
       - name: ingested_at
         description: UTC ingestion timestamp of the selected identity record.
         tests:
           - not_null
+
+  - name: stg_user_ip_addresses
+    description: "{{ doc('stg_user_ip_addresses_model') }}"
+    columns:
+      - name: user_id
+        description: User identifier associated with the IP address.
+        tests:
+          - not_null
+      - name: ip_address
+        description: Trimmed IP address from the events.
+        tests:
+          - not_null
+      - name: first_seen_at
+        description: Timestamp of the first event associated with this user_id and ip_address combination.
+      - name: last_seen_at
+        description: Timestamp of the last event associated with this user_id and ip_address combination.
+      - name: ip_address_event_count
+        description: Total number of events associated with this user_id and ip_address combination.

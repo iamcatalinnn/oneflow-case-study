@@ -4,7 +4,6 @@ SELECT
 	user_name,
 	user_email,
 	user_phone,
-	ip_address,
 	ingested_at,
 	ROW_NUMBER() OVER (
         PARTITION BY 
@@ -16,14 +15,13 @@ FROM
 	{{ source('raw', 'events') }}
 WHERE
 	user_id IS NOT NULL
-)
+),
 
-SELECT
+final AS (SELECT
 	user_id,
 	user_name,
 	user_email,
 	user_phone,
-	ip_address,
 	ingested_at,
     CASE
         WHEN user_name IS NULL THEN TRUE
@@ -45,3 +43,14 @@ FROM
 	base
 WHERE
 	rn = 1
+)
+
+SELECT 
+    *,
+    CASE 
+        WHEN is_missing_user_email = FALSE AND is_ghost_email = FALSE THEN TRUE
+        ELSE FALSE
+    END AS is_valid_identity_record
+FROM 
+    final
+

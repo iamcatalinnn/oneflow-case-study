@@ -37,10 +37,28 @@ Key design choices:
 Restricted identity staging model containing direct personal data separated from analytics events.
 
 Purpose:
-- isolate direct identifiers such as name, email, phone, and IP address
+- isolate direct identifiers such as name, email, phone
 - support governance and controlled access patterns
 - keep marts and analytics-ready event models free of unnecessary personal data
 
 This model is not intended for direct BI reporting.
+
+{% enddocs %}
+
+{% docs stg_user_ip_addresses_model %}
+
+Restricted identity staging model containing user IP address history.
+
+This model captures the relationship between users and the IP addresses observed in event data.
+Unlike user identity attributes (such as name or email), IP addresses are not stable at the user level and may change across sessions, devices, or networks.
+
+To avoid misleading assumptions, IP addresses are modeled separately from `stg_user_identity` at a user-IP grain.
+
+Typical use cases:
+- security and anomaly detection
+- auditing and traceability
+- understanding user access patterns
+
+This model is not intended for direct BI reporting and is excluded from the main analytics layer used to answer business questions.
 
 {% enddocs %}
