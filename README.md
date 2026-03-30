@@ -6,6 +6,12 @@ This project implements a small, production-style data pipeline that ingests raw
 
 > **How is document signing activity trending per account (and per plan/country)?**
 
+## Architecture
+
+<p align="center">
+  <img src="assets/architecture.png" alt="Oneflow Architecture" width="900"/>
+</p>
+
 The pipeline is built using:
 - Python for ingestion
 - PostgreSQL as the warehouse
