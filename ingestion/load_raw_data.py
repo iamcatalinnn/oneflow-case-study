@@ -1,4 +1,5 @@
 import os
+import sys
 import pandas as pd
 import psycopg2
 from psycopg2.extras import execute_values
@@ -6,17 +7,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 from dotenv import load_dotenv
 
-load_dotenv()
-
-DB_CONFIG = {
-    "host": os.getenv("DB_HOST", "localhost"),
-    "port": int(os.getenv("DB_PORT", 5432)),
-    "dbname": os.getenv("DB_NAME"),
-    "user": os.getenv("DB_USER"),
-    "password": os.getenv("DB_PASSWORD"),
-}
-
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / ".env", override=False)
+
 DATA_DIR = BASE_DIR / "data"
 
 EXPECTED_ACCOUNTS_COLS = {
@@ -28,8 +21,28 @@ EXPECTED_EVENTS_COLS = {
 }
 
 
+def get_env(name: str, default: str | None = None) -> str:
+    value = os.getenv(name, default)
+    if value is None:
+        raise ValueError(f"Missing required environment variable: {name}")
+    return value
+
+
+DB_CONFIG = {
+    "host": get_env("DB_HOST", "localhost"),
+    "port": int(get_env("DB_PORT", "5433")),
+    "dbname": get_env("DB_NAME"),
+    "user": get_env("DB_USER"),
+    "password": get_env("DB_PASSWORD"),
+}
+
+
+def print_db_config():
+    safe_config = {**DB_CONFIG, "password": "***"}
+    print(f"Using DB config: {safe_config}")
+
+
 def na_to_none(value):
-    """Convert pandas NA/NaT/nan strings to None for SQL NULL."""
     if pd.isna(value):
         return None
     if isinstance(value, str) and value.lower() == "nan":
@@ -38,17 +51,21 @@ def na_to_none(value):
 
 
 def validate_columns(df, expected, name):
-    """Raise if any expected columns are missing. Warn on unexpected extras."""
     actual = set(df.columns)
     missing = expected - actual
     extra = actual - expected
 
     if missing:
-        raise ValueError(
-            f"[{name}] Schema mismatch — missing columns: {sorted(missing)}"
-        )
+        raise ValueError(f"[{name}] Schema mismatch — missing columns: {sorted(missing)}")
     if extra:
         print(f"[{name}] WARNING: unexpected columns will be ignored: {sorted(extra)}")
+
+
+def ensure_schemas(cursor):
+    cursor.execute("CREATE SCHEMA IF NOT EXISTS raw")
+    cursor.execute("CREATE SCHEMA IF NOT EXISTS staging")
+    cursor.execute("CREATE SCHEMA IF NOT EXISTS intermediate")
+    cursor.execute("CREATE SCHEMA IF NOT EXISTS marts")
 
 
 def load_accounts(cursor, ingested_at):
@@ -84,11 +101,15 @@ def load_accounts(cursor, ingested_at):
     """)
     cursor.execute("TRUNCATE TABLE raw.accounts")
 
-    execute_values(cursor, """
+    execute_values(
+        cursor,
+        """
         INSERT INTO raw.accounts
             (account_id, company_name, plan, country, created_date, is_paying, ingested_at)
         VALUES %s
-    """, rows)
+        """,
+        rows,
+    )
 
     print(f"[accounts] Loaded {len(rows)} rows.")
 
@@ -137,12 +158,16 @@ def load_events(cursor, ingested_at):
     """)
     cursor.execute("TRUNCATE TABLE raw.events")
 
-    execute_values(cursor, """
+    execute_values(
+        cursor,
+        """
         INSERT INTO raw.events
             (event_id, user_id, user_name, user_email, user_phone, user_country,
              account_id, ip_address, event_type, event_ts, user_agent, ingested_at)
         VALUES %s
-    """, rows)
+        """,
+        rows,
+    )
 
     print(f"[events] Loaded {len(rows)} rows.")
 
@@ -151,12 +176,20 @@ if __name__ == "__main__":
     ingested_at = datetime.now(timezone.utc)
 
     try:
+        print_db_config()
+
         with psycopg2.connect(**DB_CONFIG) as conn:
             with conn.cursor() as cursor:
+                ensure_schemas(cursor)
                 load_accounts(cursor, ingested_at)
                 load_events(cursor, ingested_at)
+
         print("Ingestion complete.")
+
     except ValueError as e:
         print(f"Validation error: {e}")
+        sys.exit(1)
+
     except psycopg2.Error as e:
         print(f"Database error: {e}")
+        sys.exit(1)

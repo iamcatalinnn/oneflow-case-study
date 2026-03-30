@@ -1,0 +1,30 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: oneflow-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: oneflow
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d oneflow"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  pipeline:
+    build:
+      context: ..
+      dockerfile: containerization/Dockerfile
+    container_name: oneflow-pipeline
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - ./pipeline.env
+    volumes:
+      - ../main/dbt/target:/app/main/dbt/target
+      - ../main/dbt/logs:/app/main/dbt/logs
+    command: ["/app/containerization/run_pipeline.sh"]
