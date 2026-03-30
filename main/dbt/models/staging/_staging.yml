@@ -16,7 +16,7 @@ models:
         tests:
           - not_null
           - accepted_values:
-              values: ['free', 'starter', 'business']
+              values: ['free', 'starter', 'business', 'enterprise']
       - name: country
         description: Uppercased account country code.
         tests:
